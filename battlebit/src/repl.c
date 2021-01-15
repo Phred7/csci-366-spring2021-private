@@ -39,7 +39,7 @@ void repl_execute_command(struct char_buff * buffer) {
         char* arg2 = cb_next_token(buffer);
         char* arg3 = cb_next_token(buffer);
         if (strcmp(command, "exit") == 0) {
-            printf("goodbye!");
+            printf("goodbye, you scrub!");
             exit(EXIT_SUCCESS);
         } else if(strcmp(command, "?") == 0) {
             printf("? - show help\n");
