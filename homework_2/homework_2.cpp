@@ -13,6 +13,11 @@ char * print_binary_representation(unsigned int i, char *buffer){
  *
  * The test below show what the expected values are for given inputs
  */
+
+int print_binary_representation(){
+    return 0;
+}
+
 TEST(print_binary_representation, works) {
     // row 1
     char buffer[50] = {0}; // init to 0
@@ -37,14 +42,14 @@ struct Person {
     int age;
 };
 
-void set_my_age(struct Person p) {
-    p.age = 44;
+void set_my_age(struct Person *p) {
+    p->age = 44;
 }
 
 int get_my_age() {
     struct Person me;
     me.name = "Carson";
-    set_my_age(me);
+    set_my_age(&me);
     return me.age;
 }
 
