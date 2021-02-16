@@ -3,7 +3,21 @@
 char * print_binary_representation(unsigned int i, char *buffer){
     buffer[0] = '0';
     buffer[1] = 'b';
+    printf("%d: ", i);
     // fill out remaining 32 bits, 1 or 0 depending on the value in the number i
+    unsigned int val = 2147483648;
+    int count = 1;
+    while(count < 33){
+        count++;
+        if (i >= val){
+            i = i - val;
+            buffer[count] = '1';
+        } else{
+            buffer[count] = '0';
+        }
+        val /= 2;
+    }
+    printf("%s\n", buffer);
     return buffer;
 }
 
@@ -13,10 +27,6 @@ char * print_binary_representation(unsigned int i, char *buffer){
  *
  * The test below show what the expected values are for given inputs
  */
-
-int print_binary_representation(){
-    return 0;
-}
 
 TEST(print_binary_representation, works) {
     // row 1
