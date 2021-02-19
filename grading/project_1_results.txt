@@ -1,0 +1,226 @@
+Running main() from /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/lib/googletest/src/gtest_main.cc
+[==========] Running 12 tests from 5 test suites.
+[----------] Global test environment set-up.
+[----------] 3 tests from char_buff
+[ RUN      ] char_buff.bootstrap
+size: 2000, append_offset: 0
+string: 
+size: 2000, append_offset: 3
+string: Foo
+size: 2000, append_offset: 6
+string: FooFoo
+[       OK ] char_buff.bootstrap (0 ms)
+[ RUN      ] char_buff.noOverFlow
+size: 3, append_offset: 0
+string: 
+size: 3, append_offset: 3
+string: Foo
+size: 3, append_offset: 3
+string: Foo
+[       OK ] char_buff.noOverFlow (0 ms)
+[ RUN      ] char_buff.tokenize
+[       OK ] char_buff.tokenize (0 ms)
+[----------] 3 tests from char_buff (0 ms total)
+
+[----------] 2 tests from xy_to_bitval
+[ RUN      ] xy_to_bitval.good_values
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:11: Failure
+Expected equality of these values:
+  xy_to_bitval(1, 0)
+    Which is: 1
+  2ull
+    Which is: 2
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:12: Failure
+Expected equality of these values:
+  xy_to_bitval(2, 0)
+    Which is: 1
+  4ull
+    Which is: 4
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:13: Failure
+Expected equality of these values:
+  xy_to_bitval(3, 0)
+    Which is: 1
+  8ull
+    Which is: 8
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:14: Failure
+Expected equality of these values:
+  xy_to_bitval(4, 0)
+    Which is: 1
+  16ull
+    Which is: 16
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:15: Failure
+Expected equality of these values:
+  xy_to_bitval(5, 0)
+    Which is: 1
+  32ull
+    Which is: 32
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:16: Failure
+Expected equality of these values:
+  xy_to_bitval(6, 0)
+    Which is: 1
+  64ull
+    Which is: 64
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:17: Failure
+Expected equality of these values:
+  xy_to_bitval(7, 0)
+    Which is: 1
+  128ull
+    Which is: 128
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:20: Failure
+Expected equality of these values:
+  xy_to_bitval(0, 1)
+    Which is: 1
+  256ull
+    Which is: 256
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:21: Failure
+Expected equality of these values:
+  xy_to_bitval(1, 1)
+    Which is: 1
+  512ull
+    Which is: 512
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:22: Failure
+Expected equality of these values:
+  xy_to_bitval(2, 1)
+    Which is: 1
+  1024ull
+    Which is: 1024
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:23: Failure
+Expected equality of these values:
+  xy_to_bitval(3, 1)
+    Which is: 1
+  2048ull
+    Which is: 2048
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:24: Failure
+Expected equality of these values:
+  xy_to_bitval(4, 1)
+    Which is: 1
+  4096ull
+    Which is: 4096
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:25: Failure
+Expected equality of these values:
+  xy_to_bitval(5, 1)
+    Which is: 1
+  8192ull
+    Which is: 8192
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:26: Failure
+Expected equality of these values:
+  xy_to_bitval(6, 1)
+    Which is: 1
+  16384ull
+    Which is: 16384
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:27: Failure
+Expected equality of these values:
+  xy_to_bitval(7, 1)
+    Which is: 1
+  32768ull
+    Which is: 32768
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:30: Failure
+Expected equality of these values:
+  xy_to_bitval(0, 7)
+    Which is: 1
+  1ull << 56ull
+    Which is: 72057594037927936
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:33: Failure
+Expected equality of these values:
+  xy_to_bitval(7, 7)
+    Which is: 1
+  1ull << 63ull
+    Which is: 9223372036854775808
+[  FAILED  ] xy_to_bitval.good_values (0 ms)
+[ RUN      ] xy_to_bitval.bad_values
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:37: Failure
+Expected equality of these values:
+  xy_to_bitval(0, 8)
+    Which is: 1
+  0
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:38: Failure
+Expected equality of these values:
+  xy_to_bitval(8, 0)
+    Which is: 1
+  0
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:39: Failure
+Expected equality of these values:
+  xy_to_bitval(-1, 0)
+    Which is: 1
+  0
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:40: Failure
+Expected equality of these values:
+  xy_to_bitval(0, -1)
+    Which is: 1
+  0
+[  FAILED  ] xy_to_bitval.bad_values (0 ms)
+[----------] 2 tests from xy_to_bitval (0 ms total)
+
+[----------] 2 tests from add_ship_horizontal
+[ RUN      ] add_ship_horizontal.empty_ship
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:51: Failure
+Expected equality of these values:
+  add_ship_horizontal(player_info,1,8,0)
+    Which is: -2132093256
+  1
+[  FAILED  ] add_ship_horizontal.empty_ship (0 ms)
+[ RUN      ] add_ship_horizontal.load_ship
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:61: Failure
+Expected equality of these values:
+  add_ship_horizontal(player_info,0,0,5)
+    Which is: -2132093256
+  1
+[  FAILED  ] add_ship_horizontal.load_ship (0 ms)
+[----------] 2 tests from add_ship_horizontal (0 ms total)
+
+[----------] 2 tests from add_ship_vertical
+[ RUN      ] add_ship_vertical.empty_ship
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:72: Failure
+Expected equality of these values:
+  add_ship_vertical(player_info,1,8,0)
+    Which is: -2132093256
+  1
+[  FAILED  ] add_ship_vertical.empty_ship (0 ms)
+[ RUN      ] add_ship_vertical.load_ship
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:82: Failure
+Expected equality of these values:
+  add_ship_vertical(player_info,0,0,5)
+    Which is: -2132093256
+  1
+[  FAILED  ] add_ship_vertical.load_ship (1 ms)
+[----------] 2 tests from add_ship_vertical (1 ms total)
+
+[----------] 3 tests from game_load_board
+[ RUN      ] game_load_board.empty_spec
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:93: Failure
+Expected equality of these values:
+  game_load_board(gameon,0,__null)
+    Which is: -2132093264
+  -1
+[  FAILED  ] game_load_board.empty_spec (0 ms)
+[ RUN      ] game_load_board.incomplete_spec
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:101: Failure
+Expected equality of these values:
+  game_load_board(gameon,0,spec)
+    Which is: -2132093264
+  -1
+[  FAILED  ] game_load_board.incomplete_spec (0 ms)
+[ RUN      ] game_load_board.valid_spec
+/home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game1.cpp:131: Failure
+Expected equality of these values:
+  game_load_board(gameon, 0, spec)
+    Which is: -2132093264
+  1
+[  FAILED  ] game_load_board.valid_spec (0 ms)
+[----------] 3 tests from game_load_board (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 5 test suites ran. (1 ms total)
+[  PASSED  ] 3 tests.
+[  FAILED  ] 9 tests, listed below:
+[  FAILED  ] xy_to_bitval.good_values
+[  FAILED  ] xy_to_bitval.bad_values
+[  FAILED  ] add_ship_horizontal.empty_ship
+[  FAILED  ] add_ship_horizontal.load_ship
+[  FAILED  ] add_ship_vertical.empty_ship
+[  FAILED  ] add_ship_vertical.load_ship
+[  FAILED  ] game_load_board.empty_spec
+[  FAILED  ] game_load_board.incomplete_spec
+[  FAILED  ] game_load_board.valid_spec
+
+ 9 FAILED TESTS
