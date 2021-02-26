@@ -42,6 +42,7 @@ int game_fire(game *game, int player, int x, int y) {
 }
 
 unsigned long long int xy_to_bitval(int x, int y) {
+    long long position = 1ull;
     // Step 1 - implement this function.  We are taking an x, y position
     // and using bitwise operators, converting that to an unsigned long long
     // with a 1 in the position corresponding to that x, y
@@ -53,7 +54,13 @@ unsigned long long int xy_to_bitval(int x, int y) {
     //
     // you will need to use bitwise operators and some math to produce the right
     // value.
-    return 1ull;
+    if(x > 7 || x < 0 || y > 7 || y < 0){
+        return 0;
+    }
+
+    position = position << (y * 8);
+    position = position << x;
+    return position;
 }
 
 struct game * game_get_current() {
