@@ -107,16 +107,19 @@ int game_load_board(struct game *game, int player, char * spec) {
 
 int check_ship_bit(struct player_info *player, int x, int y){
     unsigned long long ships = player->ships;
+    //printf("\n\ncheck_bit:");
+    //helper_print_ull(player->ships);
+    unsigned long long board_bit = player->ships & xy_to_bitval(x, y);
     unsigned int n = ((y * 8) + x);
     unsigned long long mask = 1ull << n;
-    if(ships & mask){
+    if(board_bit & mask){
         return -1; //there is already a ship there
     }
     return 1; //no ship!
 
 }
 
-void set_ship_bit(player_info *player, int x, int y){
+/*void set_ship_bit(player_info *player, int x, int y){
     //helper_print_ull(player->ships);
     unsigned long long ships = player->ships;
     unsigned int n = ((y * 8) + x);
@@ -124,22 +127,24 @@ void set_ship_bit(player_info *player, int x, int y){
     player->ships = ships | mask;
     //helper_print_ull(player->ships);
 
-}
+}*/
 
 int add_ship_horizontal(player_info *player, int x, int y, int length) {
     // implement this as part of Step 2
     // returns 1 if the ship can be added, -1 if not
     // hint: this can be defined recursively
+    //printf("\n\nadd_ship_h:\n");
+    //helper_print_ull(player->ships);
     if (length == 0){ //sucess!
         return 1;
     }else if (((x || y) < 0) || ((x || y) > 7)){ //x or y out of bounds
         return -1;
     }else if ((length + x) > 7) { //ship goes off board
         return -1;
-    }else if (check_ship_bit(&player, x, y) == -1) { //ship already exists there
+    }else if (check_ship_bit(player, x, y) == -1) { //ship already exists there
         return -1;
     }else{
-        return add_ship_horizontal(&player, x+1, y, (length-1));
+        return add_ship_horizontal(player, x+1, y, (length-1));
     }
 
 
@@ -149,5 +154,15 @@ int add_ship_vertical(player_info *player, int x, int y, int length) {
     // implement this as part of Step 2
     // returns 1 if the ship can be added, -1 if not
     // hint: this can be defined recursively
-    return -1;
+    if (length == 0){ //sucess!
+        return 1;
+    }else if (((x || y) < 0) || ((x || y) > 7)){ //x or y out of bounds
+        return -1;
+    }else if ((length + y) > 7) { //ship goes off board
+        return -1;
+    }else if (check_ship_bit(player, x, y) == -1) { //ship already exists there
+        return -1;
+    }else{
+        return add_ship_horizontal(player, x, y+1, (length-1));
+    }
 }
