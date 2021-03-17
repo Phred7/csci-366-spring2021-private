@@ -181,62 +181,61 @@ int game_load_board(struct game *game, int player, char * spec) {
             if(add_ship_vertical(&game->players[player], x, y, 5) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             c += 1;
         }else if(curr == 'C' && c == 0) {
             if(add_ship_horizontal(&game->players[player], x, y, 5) == -1){
                 return -1;
             }
-            //set_ship_bit(&game->players[player], x, y);
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             c += 1;
         } else if (curr == 'd' && d == 0){
             if(add_ship_vertical(&game->players[player], x, y, 3) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             d += 1;
         } else if(curr == 'D' && d == 0) {
             if(add_ship_horizontal(&game->players[player], x, y, 3) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             d += 1;
         } else if (curr == 'b' && b == 0){
             if(add_ship_vertical(&game->players[player], x, y, 4) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             b += 1;
         } else if(curr == 'B' && b == 0) {
             if(add_ship_horizontal(&game->players[player], x, y, 4) == -1){
                 return -1;
             }
-            //set_ship_bit(&game->players[player], x, y);
+            //helper_print_ull(game->players[player].ships);
             b += 1;
         } else if (curr == 'p' && pb == 0){
             if(add_ship_vertical(&game->players[player], x, y, 2) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             pb += 1;
         } else if(curr == 'P' && pb == 0) {
             if(add_ship_horizontal(&game->players[player], x, y, 2) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             pb += 1;
         } else if (curr == 's' && s == 0){
             if(add_ship_vertical(&game->players[player], x, y, 3) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             s += 1;
         } else if(curr == 'S' && s == 0) {
             if(add_ship_horizontal(&game->players[player], x, y, 3) == -1){
                 return -1;
             }
-            helper_print_ull(game->players[player].ships);
+            //helper_print_ull(game->players[player].ships);
             s += 1;
         } else {
             return -1;
