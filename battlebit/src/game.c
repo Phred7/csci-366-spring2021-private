@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "game.h"
+#include "helper.h"
 
 // STEP 9 - Synchronization: the GAME structure will be accessed by both players interacting
 // asynchronously with the server.  Therefore the data must be protected to avoid race conditions.
@@ -42,7 +43,6 @@ int game_fire(game *game, int player, int x, int y) {
 }
 
 unsigned long long int xy_to_bitval(int x, int y) {
-    long long position = 1ull;
     // Step 1 - implement this function.  We are taking an x, y position
     // and using bitwise operators, converting that to an unsigned long long
     // with a 1 in the position corresponding to that x, y
@@ -54,6 +54,8 @@ unsigned long long int xy_to_bitval(int x, int y) {
     //
     // you will need to use bitwise operators and some math to produce the right
     // value.
+    long long position = 1ull;
+
     if(x > 7 || x < 0 || y > 7 || y < 0){
         return 0;
     }
@@ -79,16 +81,73 @@ int game_load_board(struct game *game, int player, char * spec) {
     // slot and return 1
     //
     // if it is invalid, you should return -1
+    // return -1;
+
+    if(spec == NULL){
+        return -1;
+    }
+    int c, b, d, s, pb, size = 0;
+    while (spec[size] != '\0') {
+        char curr = spec[size];
+        c = (((curr == 'c' || curr == 'C')) ^ c == 1 ^ c == -1) ? 1 : 0; //can use ternary to call add ship???
+        b = (((curr == 'b' || curr == 'B')) ^ b == 1 ^ c == -1) ? 1 : 0;
+        d = (((curr == 'd' || curr == 'D')) ^ d == 1 ^ c == -1) ? 1 : 0;
+        s = (((curr == 's' || curr == 'S')) ^ s == 1 ^ c == -1) ? 1 : 0;
+        pb = (((curr == 'p' || curr == 'P')) ^ pb == 1 ^ c == -1) ? 1 : 0;
+        size++;
+    }
+
+    if(size == (sizeof(char) * 15) && (c & b & d & s & pb & 1)){
+        return 1;
+    }else{
+        return -1;
+    }
+
+}
+
+int check_ship_bit(struct player_info *player, int x, int y){
+    unsigned long long ships = player->ships;
+    unsigned int n = ((y * 8) + x);
+    unsigned long long mask = 1ull << n;
+    if(ships & mask){
+        return -1; //there is already a ship there
+    }
+    return 1; //no ship!
+
+}
+
+void set_ship_bit(player_info *player, int x, int y){
+    //helper_print_ull(player->ships);
+    unsigned long long ships = player->ships;
+    unsigned int n = ((y * 8) + x);
+    unsigned long long mask = 1ull << n;
+    player->ships = ships | mask;
+    //helper_print_ull(player->ships);
+
 }
 
 int add_ship_horizontal(player_info *player, int x, int y, int length) {
     // implement this as part of Step 2
     // returns 1 if the ship can be added, -1 if not
     // hint: this can be defined recursively
+    if (length == 0){ //sucess!
+        return 1;
+    }else if (((x || y) < 0) || ((x || y) > 7)){ //x or y out of bounds
+        return -1;
+    }else if ((length + x) > 7) { //ship goes off board
+        return -1;
+    }else if (check_ship_bit(&player, x, y) == -1) { //ship already exists there
+        return -1;
+    }else{
+        return add_ship_horizontal(&player, x+1, y, (length-1));
+    }
+
+
 }
 
 int add_ship_vertical(player_info *player, int x, int y, int length) {
     // implement this as part of Step 2
     // returns 1 if the ship can be added, -1 if not
     // hint: this can be defined recursively
+    return -1;
 }
