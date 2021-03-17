@@ -69,42 +69,6 @@ struct game * game_get_current() {
     return GAME;
 }
 
-int game_load_board(struct game *game, int player, char * spec) {
-    // Step 2 - implement this function.  Here you are taking a C
-    // string that represents a layout of ships, then testing
-    // to see if it is a valid layout (no off-the-board positions
-    // and no overlapping ships)
-    //
-
-    // if it is valid, you should write the corresponding unsigned
-    // long long value into the Game->players[player].ships data
-    // slot and return 1
-    //
-    // if it is invalid, you should return -1
-    // return -1;
-
-    if(spec == NULL){
-        return -1;
-    }
-    int c, b, d, s, pb, size = 0;
-    while (spec[size] != '\0') {
-        char curr = spec[size];
-        c = (((curr == 'c' || curr == 'C')) ^ c == 1 ^ c == -1) ? 1 : 0; //can use ternary to call add ship???
-        b = (((curr == 'b' || curr == 'B')) ^ b == 1 ^ c == -1) ? 1 : 0;
-        d = (((curr == 'd' || curr == 'D')) ^ d == 1 ^ c == -1) ? 1 : 0;
-        s = (((curr == 's' || curr == 'S')) ^ s == 1 ^ c == -1) ? 1 : 0;
-        pb = (((curr == 'p' || curr == 'P')) ^ pb == 1 ^ c == -1) ? 1 : 0;
-        size++;
-    }
-
-    if(size == (sizeof(char) * 15) && (c & b & d & s & pb & 1)){
-        return 1;
-    }else{
-        return -1;
-    }
-
-}
-
 int check_ship_bit(struct player_info *player, int x, int y){
     unsigned long long ships = player->ships;
     //printf("\n\ncheck_bit:");
@@ -119,15 +83,30 @@ int check_ship_bit(struct player_info *player, int x, int y){
 
 }
 
-/*void set_ship_bit(player_info *player, int x, int y){
-    //helper_print_ull(player->ships);
+void set_ship_bit(player_info *player, int x, int y){
     unsigned long long ships = player->ships;
-    unsigned int n = ((y * 8) + x);
-    unsigned long long mask = 1ull << n;
+    unsigned long long mask = xy_to_bitval(x, y);
     player->ships = ships | mask;
-    //helper_print_ull(player->ships);
+}
 
-}*/
+int is_digit(char c){
+    if(c > 57){
+        return -1;
+    }
+    return 1;
+}
+
+int check_spec(char c, char x, char y){
+    if((is_digit(x) == 1) && (is_digit(y) == 1)){
+        if(c == 'c' || c == 'C' || c == 'b' || c == 'B' ||  c == 'd' || c == 'D' || c == 's' || c == 'S' || c == 'p' || c == 'P'){
+            return 1;
+        }else{
+            return -1;
+        }
+    }else {
+        return -1;
+    }
+}
 
 int add_ship_horizontal(player_info *player, int x, int y, int length) {
     // implement this as part of Step 2
@@ -144,7 +123,12 @@ int add_ship_horizontal(player_info *player, int x, int y, int length) {
     }else if (check_ship_bit(player, x, y) == -1) { //ship already exists there
         return -1;
     }else{
-        return add_ship_horizontal(player, x+1, y, (length-1));
+        if((add_ship_horizontal(player, x+1, y, (length-1)))==1){ //recurse
+            set_ship_bit(player, x, y);
+            return 1;
+        }else{
+            return -1;
+        }
     }
 
 
@@ -163,6 +147,107 @@ int add_ship_vertical(player_info *player, int x, int y, int length) {
     }else if (check_ship_bit(player, x, y) == -1) { //ship already exists there
         return -1;
     }else{
-        return add_ship_horizontal(player, x, y+1, (length-1));
+        if((add_ship_vertical(player, x, y+1, (length-1)))==1){ //recurse
+            set_ship_bit(player, x, y);
+            return 1;
+        }else{
+            return -1;
+        }
+    }
+}
+
+
+
+int game_load_board(struct game *game, int player, char * spec) {
+    if(spec == NULL){
+        return -1;
+    }
+    int c = 0;
+    int b = 0;
+    int d = 0;
+    int s = 0;
+    int pb = 0;
+    int size = 0;
+    while (spec[size] != '\0') {
+        char curr = spec[size];
+        int x, y = 0;
+        if(check_spec(curr, spec[size+1], spec[size+2]) == -1){
+            return -1;
+        }
+        x = spec[++size] - '0';
+        y = spec[++size] - '0';
+
+        if (curr == 'c' && c == 0){
+            if(add_ship_vertical(&game->players[player], x, y, 5) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            c += 1;
+        }else if(curr == 'C' && c == 0) {
+            if(add_ship_horizontal(&game->players[player], x, y, 5) == -1){
+                return -1;
+            }
+            //set_ship_bit(&game->players[player], x, y);
+            helper_print_ull(game->players[player].ships);
+            c += 1;
+        } else if (curr == 'd' && d == 0){
+            if(add_ship_vertical(&game->players[player], x, y, 3) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            d += 1;
+        } else if(curr == 'D' && d == 0) {
+            if(add_ship_horizontal(&game->players[player], x, y, 3) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            d += 1;
+        } else if (curr == 'b' && b == 0){
+            if(add_ship_vertical(&game->players[player], x, y, 4) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            b += 1;
+        } else if(curr == 'B' && b == 0) {
+            if(add_ship_horizontal(&game->players[player], x, y, 4) == -1){
+                return -1;
+            }
+            //set_ship_bit(&game->players[player], x, y);
+            b += 1;
+        } else if (curr == 'p' && pb == 0){
+            if(add_ship_vertical(&game->players[player], x, y, 2) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            pb += 1;
+        } else if(curr == 'P' && pb == 0) {
+            if(add_ship_horizontal(&game->players[player], x, y, 2) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            pb += 1;
+        } else if (curr == 's' && s == 0){
+            if(add_ship_vertical(&game->players[player], x, y, 3) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            s += 1;
+        } else if(curr == 'S' && s == 0) {
+            if(add_ship_horizontal(&game->players[player], x, y, 3) == -1){
+                return -1;
+            }
+            helper_print_ull(game->players[player].ships);
+            s += 1;
+        } else {
+            return -1;
+        }
+
+        size++;
+    }
+
+    if(size == (sizeof(char) * 15) && (c & b & d & s & pb & 1)){
+        return 1;
+    }else{
+        return -1;
     }
 }
