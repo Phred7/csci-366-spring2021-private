@@ -3,5 +3,23 @@
 ;; Paste the code below, along with the output
 
 ;; CODE   =====================================
-
+        LDA ONE
+LOOP    OUT
+        SUB TEN
+        BRZ EXIT
+        ADD ONE
+        ADD TEN
+        BRA LOOP
+ONE     DAT 1
+TEN     DAT 10
+EXIT    HLT
 ;; OUTPUT =====================================
+1
+2
+3
+4
+5
+6
+7
+89
+10
