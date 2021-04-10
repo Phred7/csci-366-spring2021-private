@@ -29,7 +29,13 @@ void game_init_player_info(player_info *player_info) {
     player_info->shots = 0;
 }
 
+int getOtherPlayer(int player) {
+    return player^1;
+}
+
 int game_fire(game *game, int player, int x, int y) {
+
+
     // Step 5 - This is the crux of the game.  You are going to take a shot from the given player and
     // update all the bit values that store our game state.
     //
@@ -40,6 +46,53 @@ int game_fire(game *game, int player, int x, int y) {
     //
     //  If the opponents ships value is 0, they have no remaining ships, and you should set the game state to
     //  PLAYER_1_WINS or PLAYER_2_WINS depending on who won.
+
+    player_info *shooterInfo = &game -> players[player];
+    int other_player_num = getOtherPlayer(player);
+    player_info *otherInfo = &game -> players[other_player_num];
+
+    unsigned long long int mask = xy_to_bitval(x,y);
+    unsigned long long int other_ships = otherInfo->ships;
+
+    if (mask & other_ships) {
+        //hit
+        otherInfo->ships = other_ships ^ mask;
+        shooterInfo->shots = shooterInfo->shots | mask;
+        shooterInfo->hits = shooterInfo->hits | mask;
+        if(x == 7 && y == 1) {
+            printf("shots:\n");
+            helper_print_ull(shooterInfo->shots);
+            printf("mask:\n");
+            helper_print_ull(mask);
+            printf("other board:\n");
+            helper_print_ull(otherInfo->ships);
+        }
+        if (otherInfo->ships == 0) {
+            if (player == 0) {
+                game->status = PLAYER_0_WINS;
+            } else {
+                game->status = PLAYER_1_WINS;
+            }
+        } else {
+            if (player == 0) {
+                game->status = PLAYER_1_TURN;
+            } else {
+                game->status = PLAYER_0_TURN;
+            }
+        }
+        return 1;
+    } else {
+        //miss
+        shooterInfo->shots = shooterInfo->shots | mask;
+        if (player == 0) {
+            game->status = PLAYER_1_TURN;
+        } else {
+            game->status = PLAYER_0_TURN;
+        }
+
+        return 0;
+    }
+
 }
 
 unsigned long long int xy_to_bitval(int x, int y) {
@@ -118,7 +171,7 @@ int add_ship_horizontal(player_info *player, int x, int y, int length) {
         return 1;
     }else if (((x || y) < 0) || ((x || y) > 7)){ //x or y out of bounds
         return -1;
-    }else if ((length + x) > 7) { //ship goes off board
+    }else if ((length + x - 1) > 7) { //ship goes off board
         return -1;
     }else if (check_ship_bit(player, x, y) == -1) { //ship already exists there
         return -1;
@@ -142,7 +195,7 @@ int add_ship_vertical(player_info *player, int x, int y, int length) {
         return 1;
     }else if (((x || y) < 0) || ((x || y) > 7)){ //x or y out of bounds
         return -1;
-    }else if ((length + y) > 7) { //ship goes off board
+    }else if ((length + y - 1) > 7) { //ship goes off board
         return -1;
     }else if (check_ship_bit(player, x, y) == -1) { //ship already exists there
         return -1;
@@ -242,9 +295,14 @@ int game_load_board(struct game *game, int player, char * spec) {
         }
 
         size++;
+
     }
 
     if(size == (sizeof(char) * 15) && (c & b & d & s & pb & 1)){
+        if ((game->players[player].ships != 0) && (game->players[getOtherPlayer(player)].ships != 0)) {
+            game->status = PLAYER_0_TURN;
+        }
+
         return 1;
     }else{
         return -1;
