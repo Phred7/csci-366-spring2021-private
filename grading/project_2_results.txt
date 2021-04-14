@@ -57,28 +57,28 @@ string: Foo
 /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game2.cpp:12: Failure
 Expected equality of these values:
   game_fire(gameon,1,0,0)
-    Which is: 1939787952
+    Which is: -1246134096
   0
 [  FAILED  ] game_fire.empty_game (0 ms)
 [ RUN      ] game_fire.hit_fire
 /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game2.cpp:21: Failure
 Expected equality of these values:
   game_fire(gameon,1,0,0)
-    Which is: 1939787952
+    Which is: -1246134096
   1
 [  FAILED  ] game_fire.hit_fire (0 ms)
 [ RUN      ] game_fire.hit_fire2
 /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game2.cpp:45: Failure
 Expected equality of these values:
   game_fire(gameon,0,0,0)
-    Which is: 1939787952
+    Which is: -1246134096
   1
 [  FAILED  ] game_fire.hit_fire2 (0 ms)
 [ RUN      ] game_fire.miss_fire
 /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game2.cpp:70: Failure
 Expected equality of these values:
   game_fire(gameon,1,5,0)
-    Which is: 1939787952
+    Which is: -1246134096
   0
 [  FAILED  ] game_fire.miss_fire (0 ms)
 [ RUN      ] game_fire.miss_fire2
@@ -94,14 +94,14 @@ Expected equality of these values:
 /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game2.cpp:125: Failure
 Expected equality of these values:
   game_fire(gameon,0,1,0)
-    Which is: 1939787952
+    Which is: -1246134096
   0
 [  FAILED  ] game_fire.miss_fire2 (0 ms)
 [ RUN      ] game_fire.invalid_fire
 /home/carson/Projects/msu/csci-366-spring2021/grading/scripts/repos/walker_ward/battlebit/googletest/game2.cpp:180: Failure
 Expected equality of these values:
   game_fire(gameon,1,8,0)
-    Which is: 1939787952
+    Which is: -1246134096
   0
 [  FAILED  ] game_fire.invalid_fire (0 ms)
 [----------] 6 tests from game_fire (0 ms total)
@@ -114,8 +114,8 @@ Expected equality of these values:
     Which is: 2
   pGame->status
     Which is: 0
-[  FAILED  ] game_status.is_correct (0 ms)
-[----------] 1 test from game_status (0 ms total)
+[  FAILED  ] game_status.is_correct (1 ms)
+[----------] 1 test from game_status (1 ms total)
 
 [----------] 2 tests from repl_print_ships
 [ RUN      ] repl_print_ships.print_ships
@@ -138,10 +138,10 @@ With diff:
 +6                 
 +7         * * *   \n
 
-[  FAILED  ] repl_print_ships.print_ships (1 ms)
+[  FAILED  ] repl_print_ships.print_ships (0 ms)
 [ RUN      ] repl_print_ships.print_ship_status
 [       OK ] repl_print_ships.print_ship_status (0 ms)
-[----------] 2 tests from repl_print_ships (1 ms total)
+[----------] 2 tests from repl_print_ships (0 ms total)
 
 [----------] 2 tests from repl_print_hits
 [ RUN      ] repl_print_hits.print_hits
@@ -189,7 +189,7 @@ With diff:
 [----------] 2 tests from repl_print_hits (0 ms total)
 
 [----------] Global test environment tear-down
-[==========] 23 tests from 9 test suites ran. (2 ms total)
+[==========] 23 tests from 9 test suites ran. (1 ms total)
 [  PASSED  ] 13 tests.
 [  FAILED  ] 10 tests, listed below:
 [  FAILED  ] game_fire.empty_game
