@@ -141,7 +141,6 @@ void repl_print_hits(struct player_info *player_info, struct char_buff *buffer) 
             } else {
                 cb_append(buffer, "  ");
             }
-            //
         }
         cb_append(buffer, " \n");
     }
