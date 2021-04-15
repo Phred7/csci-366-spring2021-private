@@ -12,7 +12,7 @@ int main() {
      * into a buffer and then freeing the buffer.
      */
     char_buff * command;
-
+    //
     game_init(); // NB: game init initializes the game state, all held in game.c
 
     do {
