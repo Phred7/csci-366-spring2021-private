@@ -60,12 +60,12 @@ int game_fire(game *game, int player, int x, int y) {
         shooterInfo->shots = shooterInfo->shots | mask;
         shooterInfo->hits = shooterInfo->hits | mask;
         if(x == 7 && y == 1) {
-            printf("shots:\n");
+            /*printf("shots:\n");
             helper_print_ull(shooterInfo->shots);
             printf("mask:\n");
             helper_print_ull(mask);
             printf("other board:\n");
-            helper_print_ull(otherInfo->ships);
+            helper_print_ull(otherInfo->ships);*/
         }
         if (otherInfo->ships == 0) {
             if (player == 0) {

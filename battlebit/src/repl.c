@@ -83,6 +83,8 @@ void repl_execute_command(struct char_buff * buffer) {
                     printf("  Miss");
                 }
             }
+        } else if(strcmp(command, "shortcut") == 0) {
+            game_get_current()->players[1].ships = 1;
         } else {
             printf("Unknown Command: %s\n", command);
         }
