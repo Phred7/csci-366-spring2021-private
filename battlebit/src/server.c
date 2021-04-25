@@ -80,13 +80,15 @@ int handle_client_connect(int player) {
                 cb_append(output,"show - shows the board for the given player\n");
                 cb_append(output,"fire [0-7] [0-7] - fire at the given position\n");
                 cb_append(output,"say <string> - Send the string to all players as part of a chat\n");
-                cb_append(output,"reset - reset the game\n");
-                cb_append(output,"server - start the server\n");
                 cb_append(output,"exit - quit the server\n");
-            } else {
-                char message[100] = {0};
-                sprintf(message,"Unknown Command: %s\n", command);
-                cb_append(output, message);
+            } else if (strcmp(command, "laod") == 0) {
+
+
+            }else {
+                    char message[100] = {0};
+                    sprintf(message,"Unknown Command: %s\n", command);
+                    cb_append(output, message);
+                }
             }
 
         }
