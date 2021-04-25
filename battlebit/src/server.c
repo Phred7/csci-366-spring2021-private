@@ -45,8 +45,9 @@ int handle_client_connect(int player) {
     struct game * game_curr = game_get_current();
     int read_size;
     int buffer_size = 2000;
-    char_buff *raw_buffer = cb_create(buffer_size);
-    char_buff *output = cb_create(buffer_size);
+    char raw_buffer[buffer_size];
+    //struct char_buff * raw_buffer = cb_create(buffer_size);
+    struct char_buff * output = cb_create(buffer_size);
     char message[100] = {0};
     sprintf(message,"Welcome to battleBit server Player %d\n", player);
     send(client_socket, message, strlen(message), 0);
@@ -61,11 +62,15 @@ int handle_client_connect(int player) {
 
         pthread_mutex_lock(&lock); //mutex lock
         cb_reset(output);
-        char* command = cb_tokenize(&raw_buffer, " \n");
-        if (command) {
-            char* arg1 = cb_next_token(&raw_buffer);
-            char* arg2 = cb_next_token(&raw_buffer);
-            if (strcmp(command, "exit") == 0) {
+
+        struct char_buff * input = cb_create(buffer_size);
+        cb_append(input, raw_buffer);
+        char * command = cb_tokenize(input, " \r");
+
+        if (true) {
+            char* arg1 = cb_next_token(input);
+            char* arg2 = cb_next_token(input);
+            /*if (strcmp(command, "exit") == 0) {
                 cb_append(output, "\ngoodbye, you scrub!");
                 cb_write(client_socket, output);
                 exit(EXIT_SUCCESS);
@@ -82,11 +87,12 @@ int handle_client_connect(int player) {
                 char message[100] = {0};
                 sprintf(message,"Unknown Command: %s\n", command);
                 cb_append(output, message);
-            }
+            }*/
 
         }
 
-        cb_append(output, "\nbattleBit (? for help) > ");
+        //cb_append(output, "\nbattleBit (? for help) > ");
+        cb_append(output, "\nclosing connection");
         cb_write(client_socket, output);
     }
     pthread_mutex_unlock(&lock); //mutex_unlock
