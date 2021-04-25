@@ -67,18 +67,18 @@ int handle_client_connect(int player) {
         cb_append(input, raw_buffer);
         char * command = cb_tokenize(input, " \r");
 
-        if (true) {
+        if (command) {
             char* arg1 = cb_next_token(input);
             char* arg2 = cb_next_token(input);
-            /*if (strcmp(command, "exit") == 0) {
+            if (strcmp(command, "exit") == 0) {
                 cb_append(output, "\ngoodbye, you scrub!");
                 cb_write(client_socket, output);
                 exit(EXIT_SUCCESS);
             } else if (strcmp(command, "?") == 0) {
                 cb_append(output,"? - show help\n");
-                cb_append(output,"load [0-1] <string> - load a ship layout file for the given player\n");
-                cb_append(output,"show [0-1] - shows the board for the given player\n");
-                cb_append(output,"fire [0-1] [0-7] [0-7] - fire at the given position\n");
+                cb_append(output,"load <string> - load a ship layout file for the given player\n");
+                cb_append(output,"show - shows the board for the given player\n");
+                cb_append(output,"fire [0-7] [0-7] - fire at the given position\n");
                 cb_append(output,"say <string> - Send the string to all players as part of a chat\n");
                 cb_append(output,"reset - reset the game\n");
                 cb_append(output,"server - start the server\n");
@@ -87,12 +87,12 @@ int handle_client_connect(int player) {
                 char message[100] = {0};
                 sprintf(message,"Unknown Command: %s\n", command);
                 cb_append(output, message);
-            }*/
+            }
 
         }
 
-        //cb_append(output, "\nbattleBit (? for help) > ");
-        cb_append(output, "\nclosing connection");
+        cb_append(output, "\nbattleBit (? for help) > ");
+        //cb_append(output, "\nclosing connection");
         cb_write(client_socket, output);
     }
     pthread_mutex_unlock(&lock); //mutex_unlock
