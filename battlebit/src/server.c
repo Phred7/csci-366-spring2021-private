@@ -97,7 +97,7 @@ int handle_client_connect(int player) {
 
 }
 
-/*int handle_client_connect(int player) {
+/*int handle_client_connect_2(int player) {
     // STEP 8 - This is the big one: you will need to re-implement the REPL code from
     // the repl.c file, but with a twist: you need to make sure that a player only
     // fires when the game is initialized and it is there turn.  They can broadcast
@@ -136,7 +136,7 @@ int handle_client_connect(int player) {
         struct char_buff *input = cb_create(2000);
         cb_append(&input, &raw_buffer);
         char* command = cb_tokenize(&input, " \n");
-        /*if (command) {
+        if (command) {
             char* arg1 = cb_next_token(&raw_buffer);
             char* arg2 = cb_next_token(&raw_buffer);
             if (strcmp(command, "exit") == 0) {
@@ -158,7 +158,7 @@ int handle_client_connect(int player) {
                 cb_append(output, message);
             }
 
-        }*/
+        }
         char message[100] = {0};
         sprintf(message,"Unknown Command: %s\n", command);
         cb_append(output, message);
