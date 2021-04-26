@@ -46,7 +46,7 @@ int handle_client_connect(int player) {
     int read_size;
     int buffer_size = 2000;
     int loaded = 1;
-    char raw_buffer[buffer_size];
+    //char raw_buffer[buffer_size];
     //struct char_buff * raw_buffer = cb_create(buffer_size);
     struct char_buff * output = cb_create(buffer_size);
     char message[100] = {0};
@@ -57,6 +57,7 @@ int handle_client_connect(int player) {
     cb_write(client_socket, output);
 
     while (game_curr->status != PLAYER_0_WINS && game_curr->status != PLAYER_1_WINS) {
+        char raw_buffer[buffer_size];
         while ((read_size = recv(client_socket, raw_buffer, buffer_size, 0)) > 0) {
             int fires = 1;
             //take raw_buffer and dump into input char bf (tokenize?)
@@ -113,7 +114,7 @@ int handle_client_connect(int player) {
                         int y = atoi(arg2);
                         if (x < 0 || x >= BOARD_DIMENSION || y < 0 || y >= BOARD_DIMENSION) {
                             char message[100] = {0};
-                            sprintf("Invalid coordinate: %i %i\n", x, y);
+                            sprintf("Invalid coordinate: %d %d\n", x, y);
                             cb_append(output, message);
                         } else {
                             fires = 0;
@@ -149,11 +150,16 @@ int handle_client_connect(int player) {
                     }
                 } else if (strcmp(command, "say") == 0) {
                     char message[100] = {0};
-                    sprintf(message, "\nPlayer %d says: ", player);
+                    sprintf(message, "\nPlayer %d says:", player);
                     cb_append(output, message);
-                    cb_append(output, arg1);
-                    cb_append(output, " ");
-                    cb_append(output, arg2);
+                    if (arg1 != NULL) {
+                        cb_append(output, " ");
+                        cb_append(output, arg1);
+                    }
+                    if (arg2 != NULL) {
+                        cb_append(output, " ");
+                        cb_append(output, arg2);
+                    }
                     char * msg;
                     while((msg = cb_next_token(input)) > 0) {
                         cb_append(output, " ");
@@ -175,11 +181,11 @@ int handle_client_connect(int player) {
                 cb_append(output, endMSG);
                 //cb_append(output, "\nclosing connection");
                 server_broadcast(output);
-                pthread_mutex_unlock(&lock);
-                for (int i = 0; i < 2; i++) {
-                    close(SERVER->player_sockets[i]);
-                    pthread_join(SERVER->player_threads[i], NULL);
-                }
+
+                /**/
+                cb_reset(input);
+                memset(raw_buffer, 0, sizeof raw_buffer);
+                pthread_mutex_unlock(&lock); //mutex_unlock
                 break;
             }
 
@@ -189,11 +195,16 @@ int handle_client_connect(int player) {
             } else {
                 cb_write(client_socket, output);
             }
+            cb_reset(input);
+            memset(raw_buffer, 0, sizeof raw_buffer);
             pthread_mutex_unlock(&lock); //mutex_unlock
         }
     }
-
-
+    for (int i = 0; i < 2; i++) {
+        close(SERVER->player_sockets[i]);
+        pthread_join(SERVER->player_threads[i], NULL);
+    }
+    exit(EXIT_SUCCESS);
     //use mutexes: (declared outside of this func) pthread_mutex_lock and pthread_mutex_unlock around anywhere data is being manipulated
     //(so only one client can change data at a time)... just inside of this func works... dont need fine grain locking
     //protect data in game.c... 2 threads cannot be even looking at the data at the same time
