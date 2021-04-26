@@ -45,6 +45,7 @@ int handle_client_connect(int player) {
     struct game * game_curr = game_get_current();
     int read_size;
     int buffer_size = 2000;
+    int loaded = 1;
     char raw_buffer[buffer_size];
     //struct char_buff * raw_buffer = cb_create(buffer_size);
     struct char_buff * output = cb_create(buffer_size);
@@ -83,7 +84,13 @@ int handle_client_connect(int player) {
                     cb_append(output, "say <string> - Send the string to all players as part of a chat\n");
                     cb_append(output, "exit - quit the server\n");
                 } else if (strcmp(command, "load") == 0) {
-                    game_load_board(game_get_current(), player, arg1);
+                    if (loaded == 1) {
+                        game_load_board(game_get_current(), player, arg1);
+                        loaded = 0;
+                    } else {
+                        cb_append(output, "another configuration already loaded\n");
+                    }
+
                 } else if (strcmp(command, "show") == 0) {
                     struct char_buff *boardBuffer = cb_create(buffer_size);
                     repl_print_board(game_get_current(), player, boardBuffer);
@@ -92,7 +99,7 @@ int handle_client_connect(int player) {
                     send(client_socket, message, strlen(message), 0);
                     cb_free(boardBuffer);
                 } else if (strcmp(command, "fire") == 0) {
-                    if (game_curr->status != ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)) {
+                    if (game_curr->status == ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)) {
                         int x = atoi(arg1);
                         int y = atoi(arg2);
                         if (x < 0 || x >= BOARD_DIMENSION || y < 0 || y >= BOARD_DIMENSION) {
@@ -118,12 +125,18 @@ int handle_client_connect(int player) {
                         }
                     } else {
                         if (game_curr->status == INITIALIZED || game_curr->status == CREATED) {
-                            cb_append(output, "Game has not begun!\n");
+                            if (loaded == 0) {
+                                char message[100] = {0};
+                                int other = player ^1;
+                                sprintf(message, "Waiting on Player %d\n", other);
+                                cb_append(output, message);
+                            } else {
+                                cb_append(output, "Game has not begun!\n");
+                            }
                         } else {
                             char message[100] = {0};
                             int other = player ^1;
                             sprintf(message, "Waiting on Player %d\n", other);
-                            send(client_socket, message, strlen(message), 0);
                             cb_append(output, message);
                         }
                     }
