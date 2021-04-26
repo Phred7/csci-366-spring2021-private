@@ -67,9 +67,10 @@ int handle_client_connect(int player) {
 
             struct char_buff *input = cb_create(buffer_size);
             cb_append(input, raw_buffer);
-            char *command = cb_tokenize(input, " \r");
+            char *command = cb_tokenize(input, " \r\n");
 
             if (command) {
+                int other = player ^1;
                 char *arg1 = cb_next_token(input);
                 char *arg2 = cb_next_token(input);
                 if (strcmp(command, "exit") == 0) {
@@ -88,8 +89,8 @@ int handle_client_connect(int player) {
                         game_load_board(game_get_current(), player, arg1);
                         loaded = 0;
                         char message[100] = {0};
-                        if (game_curr->players[(player^1)].ships == 0) {
-                            sprintf(message, "Waiting on Player %d", (player^1));
+                        if (game_curr->players[other].ships == 0) {
+                            sprintf(message, "Waiting on Player %d", other);
                         } else {
                             sprintf(message, "All player boards loaded\nPlayer 0 turn");
                         }
@@ -115,49 +116,49 @@ int handle_client_connect(int player) {
                             cb_append(output, message);
                         } else {
                             char message[100] = {0};
-                            sprintf(message, "Player %d fires at %d, %d", player, x, y);
+                            sprintf(message, "Player %d fires at %d %d", player, x, y);
                             cb_append(output, message);
-                            printf("Player %i fired at %i %i\n", player + 1, x, y);  //+1?
+                            //printf("Player %i fired at %i %i\n", player + 1, x, y);  //+1?
                             int result = game_fire(game_get_current(), player, x, y);
                             if (result) {
-                                printf("  HIT!!!");
+                                //printf("  HIT!!!");
                                 cb_append(output, " - HIT");
                             } else {
-                                printf("  Miss");
+                                //printf("  Miss");
                                 cb_append(output, " - MISS");
                             }
-                            server_broadcast(output);
-                            cb_reset(output);
+                            //server_broadcast(output);
+                            //cb_reset(output);
                         }
                     } else {
                         if (game_curr->status == INITIALIZED || game_curr->status == CREATED) {
                             if (loaded == 0) {
                                 char message[100] = {0};
-                                int other = player ^1;
-                                sprintf(message, "Waiting on Player %d\n", other);
+                                sprintf(message, "Waiting on Player %d", other);
                                 cb_append(output, message);
                             } else {
-                                cb_append(output, "Game has not begun!\n");
+                                cb_append(output, "Game has not begun!");
                             }
                         } else {
                             char message[100] = {0};
-                            int other = player ^1;
-                            sprintf(message, "Waiting on Player %d\n", other);
+                            sprintf(message, "Player %d turn\n", other);
                             cb_append(output, message);
                         }
                     }
                 } else if (strcmp(command, "say") == 0) {
                     char message[100] = {0};
-                    sprintf(message, "Player %d says: ", player);
+                    sprintf(message, "\nPlayer %d says: ", player);
                     cb_append(output, message);
                     cb_append(output, arg1);
+                    cb_append(output, " ");
                     cb_append(output, arg2);
                     char * msg;
                     while((msg = cb_next_token(input)) > 0) {
+                        cb_append(output, " ");
                         cb_append(output, msg);
                     }
-                    server_broadcast(output);
-                    cb_reset(output);
+                    //
+                    //cb_reset(output);
                 } else {
                     char message[100] = {0};
                     sprintf(message, "Unknown Command: %s\n", command);
@@ -172,15 +173,20 @@ int handle_client_connect(int player) {
                 cb_append(output, endMSG);
                 //cb_append(output, "\nclosing connection");
                 server_broadcast(output);
+                pthread_mutex_unlock(&lock);
                 for (int i = 0; i < 2; i++) {
                     close(SERVER->player_sockets[i]);
                     pthread_join(SERVER->player_threads[i], NULL);
                 }
                 break;
             }
+
             cb_append(output, "\nbattleBit (? for help) > ");
-            //cb_append(output, "\nclosing connection");
-            cb_write(client_socket, output);
+            if (strcmp(command, "say") == 0 || (strcmp(command, "fire") == 0 && (game_curr->status == ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)))) {
+                server_broadcast(output);
+            } else {
+                cb_write(client_socket, output);
+            }
             pthread_mutex_unlock(&lock); //mutex_unlock
         }
     }
@@ -193,13 +199,12 @@ int handle_client_connect(int player) {
 }
 
 void server_broadcast(char_buff *msg) {
-    puts(msg);
     for(int i = 0; i < 2; i++) {
         int client_socket = SERVER->player_sockets[i];
         cb_write(client_socket, msg);
     }
-
-
+    printf("%s\n", msg->buffer);  //printf works in handle_client_connect for server prints
+    puts("");
     // send message to all players
 }
 
@@ -243,8 +248,8 @@ int run_server() {
         listen(server_socket_fd, 3);
 
         //Accept an incoming connection
-        puts("Waiting for incoming connections...");
-
+        puts("Waiting for incoming connections...\n");
+        puts("battleBit (? for help) > \n");
 
         struct sockaddr_in client;
         socklen_t size_from_connect;
@@ -269,9 +274,11 @@ int run_server() {
                 //break;
             }
             request_count++;
-            /*if (request_count > 1) {
-                break;
-            }*/
+
+            if (request_count > 1) {
+                //printf("brok");
+                //break;
+            }
 
         }
     }
