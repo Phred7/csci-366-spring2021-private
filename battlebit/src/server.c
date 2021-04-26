@@ -58,6 +58,7 @@ int handle_client_connect(int player) {
 
     while (game_curr->status != PLAYER_0_WINS && game_curr->status != PLAYER_1_WINS) {
         while ((read_size = recv(client_socket, raw_buffer, buffer_size, 0)) > 0) {
+            int fires = 1;
             //take raw_buffer and dump into input char bf (tokenize?)
             //mimic repl_execture_cmd()... pass through the current player (so that client cannot fire for the other player)... ignore cb_free()
             //big ugly if statements
@@ -115,6 +116,7 @@ int handle_client_connect(int player) {
                             sprintf("Invalid coordinate: %i %i\n", x, y);
                             cb_append(output, message);
                         } else {
+                            fires = 0;
                             char message[100] = {0};
                             sprintf(message, "Player %d fires at %d %d", player, x, y);
                             cb_append(output, message);
@@ -182,7 +184,7 @@ int handle_client_connect(int player) {
             }
 
             cb_append(output, "\nbattleBit (? for help) > ");
-            if (strcmp(command, "say") == 0 || (strcmp(command, "fire") == 0 && (game_curr->status == ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)))) {
+            if (strcmp(command, "say") == 0 || (fires == 0)) {
                 server_broadcast(output);
             } else {
                 cb_write(client_socket, output);
@@ -203,7 +205,7 @@ void server_broadcast(char_buff *msg) {
         int client_socket = SERVER->player_sockets[i];
         cb_write(client_socket, msg);
     }
-    printf("%s\n", msg->buffer);  //printf works in handle_client_connect for server prints
+    printf("%s", msg->buffer);  //printf works in handle_client_connect for server prints
     puts("");
     // send message to all players
 }
