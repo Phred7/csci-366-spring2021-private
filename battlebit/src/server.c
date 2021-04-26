@@ -55,75 +55,100 @@ int handle_client_connect(int player) {
     cb_append(output, "battleBit (? for help) > ");
     cb_write(client_socket, output);
 
-    while ((read_size = recv(client_socket, raw_buffer, buffer_size, 0)) > 0) {
-        //take raw_buffer and dump into input char bf (tokenize?)
-        //mimic repl_execture_cmd()... pass through the current player (so that client cannot fire for the other player)... ignore cb_free()
-        //big ugly if statements
+    while (game_curr->status != PLAYER_0_WINS || game_curr->status != PLAYER_1_WINS) {
+        while ((read_size = recv(client_socket, raw_buffer, buffer_size, 0)) > 0) {
+            //take raw_buffer and dump into input char bf (tokenize?)
+            //mimic repl_execture_cmd()... pass through the current player (so that client cannot fire for the other player)... ignore cb_free()
+            //big ugly if statements
 
-        pthread_mutex_lock(&lock); //mutex lock
-        cb_reset(output);
+            pthread_mutex_lock(&lock); //mutex lock
+            cb_reset(output);
 
-        struct char_buff * input = cb_create(buffer_size);
-        cb_append(input, raw_buffer);
-        char * command = cb_tokenize(input, " \r");
+            struct char_buff *input = cb_create(buffer_size);
+            cb_append(input, raw_buffer);
+            char *command = cb_tokenize(input, " \r");
 
-        if (command) {
-            char* arg1 = cb_next_token(input);
-            char* arg2 = cb_next_token(input);
-            if (strcmp(command, "exit") == 0) {
-                cb_append(output, "\ngoodbye, you scrub!");
-                cb_write(client_socket, output);
-                exit(EXIT_SUCCESS);
-            } else if (strcmp(command, "?") == 0) {
-                cb_append(output,"? - show help\n");
-                cb_append(output,"load <string> - load a ship layout file for the given player\n");
-                cb_append(output,"show - shows the board for the given player\n");
-                cb_append(output,"fire [0-7] [0-7] - fire at the given position\n");
-                cb_append(output,"say <string> - Send the string to all players as part of a chat\n");
-                cb_append(output,"exit - quit the server\n");
-            } else if (strcmp(command, "load") == 0) {
-                game_load_board(game_get_current(), player, arg1);
-            } else if (strcmp(command, "show") == 0) {
-                struct char_buff *boardBuffer = cb_create(buffer_size);
-                repl_print_board(game_get_current(), player, boardBuffer);
-                char message[100] = {0};
-                sprintf(message, "%s", boardBuffer->buffer);
-                send(client_socket, message, strlen(message), 0);
-                cb_free(boardBuffer);
-            } else if (strcmp(command, "fire") == 0) {
-                if (game_curr->status != ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)) {
-
-                } else {
-                    if (game_curr->status == INITIALIZED || game_curr->status == CREATED) {
-                        cb_append(output,"Game has not begun!\n");
+            if (command) {
+                char *arg1 = cb_next_token(input);
+                char *arg2 = cb_next_token(input);
+                if (strcmp(command, "exit") == 0) {
+                    cb_append(output, "\ngoodbye, you scrub!");
+                    cb_write(client_socket, output);
+                    exit(EXIT_SUCCESS);
+                } else if (strcmp(command, "?") == 0) {
+                    cb_append(output, "? - show help\n");
+                    cb_append(output, "load <string> - load a ship layout file for the given player\n");
+                    cb_append(output, "show - shows the board for the given player\n");
+                    cb_append(output, "fire [0-7] [0-7] - fire at the given position\n");
+                    cb_append(output, "say <string> - Send the string to all players as part of a chat\n");
+                    cb_append(output, "exit - quit the server\n");
+                } else if (strcmp(command, "load") == 0) {
+                    game_load_board(game_get_current(), player, arg1);
+                } else if (strcmp(command, "show") == 0) {
+                    struct char_buff *boardBuffer = cb_create(buffer_size);
+                    repl_print_board(game_get_current(), player, boardBuffer);
+                    char message[100] = {0};
+                    sprintf(message, "%s", boardBuffer->buffer);
+                    send(client_socket, message, strlen(message), 0);
+                    cb_free(boardBuffer);
+                } else if (strcmp(command, "fire") == 0) {
+                    if (game_curr->status != ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)) {
+                        int x = atoi(arg1);
+                        int y = atoi(arg2);
+                        if (x < 0 || x >= BOARD_DIMENSION || y < 0 || y >= BOARD_DIMENSION) {
+                            char message[100] = {0};
+                            sprintf("Invalid coordinate: %i %i\n", x, y);
+                            cb_append(output, message);
+                        } else {
+                            char message[100] = {0};
+                            sprintf(message, "Player %d fires at %d, %d", player, x, y);
+                            cb_append(output, message);
+                            printf("Player %i fired at %i %i\n", player + 1, x, y);  //+1?
+                            int result = game_fire(game_get_current(), player, x, y);
+                            if (result) {
+                                printf("  HIT!!!");
+                                cb_append(output, " - HIT");
+                            } else {
+                                printf("  Miss");
+                                cb_append(output, " - MISS");
+                            }
+                            cb_append(output, "\n");
+                            server_broadcast(output);
+                            cb_reset(output);
+                        }
                     } else {
-                        char message[100] = {0};
-                        int other = player^1;
-                        sprintf(message,"Waiting on Player %d\n", other);
-                        send(client_socket, message, strlen(message), 0);
-                        cb_append(output,message);
+                        if (game_curr->status == INITIALIZED || game_curr->status == CREATED) {
+                            cb_append(output, "Game has not begun!\n");
+                        } else {
+                            char message[100] = {0};
+                            int other = player ^1;
+                            sprintf(message, "Waiting on Player %d\n", other);
+                            send(client_socket, message, strlen(message), 0);
+                            cb_append(output, message);
+                        }
                     }
+                } else if (strcmp(command, "say") == 0) {
+                    char message[100] = {0};
+                    sprintf(message, "Player %d says: ", player);
+                    cb_append(output, message);
+                    cb_append(output, arg1);
+                    server_broadcast(output);
+                    cb_reset(output);
+                } else {
+                    char message[100] = {0};
+                    sprintf(message, "Unknown Command: %s\n", command);
+                    cb_append(output, message);
                 }
-            } else if (strcmp(command, "say") == 0) {
-                struct char_buff * output = cb_create(2000);
-                char message[100] = {0};
-                sprintf(message,"Player %d says: ", player);
-                cb_append(output, message);
-                cb_append(output, arg1);
-                server_broadcast(output);
-            } else {
-                char message[100] = {0};
-                sprintf(message,"Unknown Command: %s\n", command);
-                cb_append(output, message);
+
             }
 
+            cb_append(output, "\nbattleBit (? for help) > ");
+            //cb_append(output, "\nclosing connection");
+            cb_write(client_socket, output);
+            pthread_mutex_unlock(&lock); //mutex_unlock
         }
-
-        cb_append(output, "\nbattleBit (? for help) > ");
-        //cb_append(output, "\nclosing connection");
-        cb_write(client_socket, output);
     }
-    pthread_mutex_unlock(&lock); //mutex_unlock
+
 
     //use mutexes: (declared outside of this func) pthread_mutex_lock and pthread_mutex_unlock around anywhere data is being manipulated
     //(so only one client can change data at a time)... just inside of this func works... dont need fine grain locking
