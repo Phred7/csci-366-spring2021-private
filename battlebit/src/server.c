@@ -56,7 +56,7 @@ int handle_client_connect(int player) {
     cb_append(output, "battleBit (? for help) > ");
     cb_write(client_socket, output);
 
-    while (game_curr->status != PLAYER_0_WINS || game_curr->status != PLAYER_1_WINS) {
+    while (game_curr->status != PLAYER_0_WINS && game_curr->status != PLAYER_1_WINS) {
         while ((read_size = recv(client_socket, raw_buffer, buffer_size, 0)) > 0) {
             //take raw_buffer and dump into input char bf (tokenize?)
             //mimic repl_execture_cmd()... pass through the current player (so that client cannot fire for the other player)... ignore cb_free()
@@ -87,6 +87,13 @@ int handle_client_connect(int player) {
                     if (loaded == 1) {
                         game_load_board(game_get_current(), player, arg1);
                         loaded = 0;
+                        char message[100] = {0};
+                        if (game_curr->players[(player^1)].ships == 0) {
+                            sprintf(message, "Waiting on Player %d", (player^1));
+                        } else {
+                            sprintf(message, "All player boards loaded\nPlayer 0 turn");
+                        }
+                        cb_append(output, message);
                     } else {
                         cb_append(output, "another configuration already loaded\n");
                     }
@@ -96,7 +103,7 @@ int handle_client_connect(int player) {
                     repl_print_board(game_get_current(), player, boardBuffer);
                     char message[100] = {0};
                     sprintf(message, "%s", boardBuffer->buffer);
-                    send(client_socket, message, strlen(message), 0);
+                    cb_append(output, message);
                     cb_free(boardBuffer);
                 } else if (strcmp(command, "fire") == 0) {
                     if (game_curr->status == ((player == 0) ? PLAYER_0_TURN : PLAYER_1_TURN)) {
@@ -119,7 +126,6 @@ int handle_client_connect(int player) {
                                 printf("  Miss");
                                 cb_append(output, " - MISS");
                             }
-                            cb_append(output, "\n");
                             server_broadcast(output);
                             cb_reset(output);
                         }
@@ -145,6 +151,11 @@ int handle_client_connect(int player) {
                     sprintf(message, "Player %d says: ", player);
                     cb_append(output, message);
                     cb_append(output, arg1);
+                    cb_append(output, arg2);
+                    char * msg;
+                    while((msg = cb_next_token(input)) > 0) {
+                        cb_append(output, msg);
+                    }
                     server_broadcast(output);
                     cb_reset(output);
                 } else {
@@ -152,9 +163,21 @@ int handle_client_connect(int player) {
                     sprintf(message, "Unknown Command: %s\n", command);
                     cb_append(output, message);
                 }
-
             }
 
+            if (game_curr->status == PLAYER_0_WINS || game_curr->status == PLAYER_0_WINS) {
+                cb_reset(output);
+                char endMSG[100] = {0};
+                sprintf(endMSG, " - Player %d Wins!\n", ((game_curr->status == PLAYER_0_WINS) ? 0 : 1));
+                cb_append(output, endMSG);
+                //cb_append(output, "\nclosing connection");
+                server_broadcast(output);
+                for (int i = 0; i < 2; i++) {
+                    close(SERVER->player_sockets[i]);
+                    pthread_join(SERVER->player_threads[i], NULL);
+                }
+                break;
+            }
             cb_append(output, "\nbattleBit (? for help) > ");
             //cb_append(output, "\nclosing connection");
             cb_write(client_socket, output);
@@ -170,7 +193,7 @@ int handle_client_connect(int player) {
 }
 
 void server_broadcast(char_buff *msg) {
-    printf(msg);
+    puts(msg);
     for(int i = 0; i < 2; i++) {
         int client_socket = SERVER->player_sockets[i];
         cb_write(client_socket, msg);
@@ -246,6 +269,10 @@ int run_server() {
                 //break;
             }
             request_count++;
+            /*if (request_count > 1) {
+                break;
+            }*/
+
         }
     }
 }
